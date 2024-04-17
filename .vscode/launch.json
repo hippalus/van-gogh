@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Van_Gogh",
-            "args": [],
+            "args": ["${workspaceFolder}/cuddlyferris.png"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

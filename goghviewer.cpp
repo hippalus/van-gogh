@@ -8,7 +8,6 @@ GoghViewer::GoghViewer(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::GoghViewer)
 {
     ui->setupUi(this);
-    GoghViewer::openImage(QString("./cuddlyferris.png"));
 }
 
 GoghViewer::~GoghViewer()
@@ -34,7 +33,8 @@ void GoghViewer::openImage()
 
 void GoghViewer::openImage(QString selectedFile)
 {
-    if (selectedFile.isNull()) {
+    if (selectedFile.isNull())
+    {
         std::cout << "No file selected" << std::endl;
         return;
     }
@@ -52,7 +52,7 @@ void GoghViewer::openImage(QString selectedFile)
 QPixmap GoghViewer::loadImage(QString imagePath)
 {
     QImage image(imagePath);
-    // TODO load image with some image manipulation library and 
+    // TODO load image with some image manipulation library and
     // feed it to the QPixmap
     return QPixmap::fromImage(image);
 }

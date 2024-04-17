@@ -16,6 +16,7 @@ class GoghViewer : public QMainWindow
 public:
     GoghViewer(QWidget *parent = nullptr);
     ~GoghViewer();
+    void openImage(QString selectedFile);
 
 private slots:
 
@@ -26,7 +27,6 @@ private slots:
 private:
     Ui::GoghViewer *ui;
     void openImage();
-    void openImage(QString selectedFile);
     QPixmap loadImage(QString imagePath);
 };
 #endif // GOGHVIEWER_H
