@@ -2,18 +2,18 @@
 #include "./ui_goghviewer.h"
 #include "imageloader.h"
 
+#include <iostream>
+
 #include <QFileDialog>
 #include <QGraphicsPixmapItem>
-#include <iostream>
-#include <string>
-#include <fstream>
-
+#include <QMessageBox>
 
 GoghViewer::GoghViewer(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::GoghViewer)
 {
     this->il = ImageLoader();
     ui->setupUi(this);
+    ui->gridWidget->hide();
 }
 
 GoghViewer::~GoghViewer()
@@ -21,12 +21,12 @@ GoghViewer::~GoghViewer()
     delete ui;
 }
 
-void GoghViewer::on_pushButton_released()
+void GoghViewer::on_action_Open_triggered()
 {
     GoghViewer::openImage();
 }
 
-void GoghViewer::on_action_Open_triggered()
+void GoghViewer::on_btnOpenFile_clicked()
 {
     GoghViewer::openImage();
 }
@@ -48,9 +48,34 @@ void GoghViewer::openImage(QString selectedFile)
     std::cout << "Opening image: " << selectedFile.toStdString() << std::endl;
 
     QGraphicsScene *scene = new QGraphicsScene;
-    ui->graphicsView->setScene(scene);
+    ui->imageViewer->setScene(scene);
 
     QPixmap pixmap = this->il.loadImage(selectedFile);
     QGraphicsPixmapItem *item = new QGraphicsPixmapItem(pixmap);
     scene->addItem(item);
+
+    this->adjustSize();
+}
+
+void GoghViewer::on_actionAbout_triggered()
+{
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle("About Van Gogh");
+    msgBox.setTextFormat(Qt::RichText);
+    msgBox.setText(R"(
+        🖌️ Van Gogh Image Viewer
+        <br/>
+        <a href="https://github.com/hdoordt/van-gogh">Git repository</a>
+    )");
+    msgBox.exec();
+}
+
+void GoghViewer::on_pushButton_clicked()
+{
+    ui->gridWidget->setVisible(!ui->gridWidget->isVisible());
+}
+
+void GoghViewer::on_btnToolGreyscale_clicked()
+{
+    std::cout << "We should probably convert the image to greyscale at some point" << std::endl;
 }

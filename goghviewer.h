@@ -1,12 +1,13 @@
 #ifndef GOGHVIEWER_H
 #define GOGHVIEWER_H
 
-#include "imageloader.h" 
+#include "imageloader.h"
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
-namespace Ui {
-class GoghViewer;
+namespace Ui
+{
+    class GoghViewer;
 }
 QT_END_NAMESPACE
 
@@ -21,9 +22,15 @@ public:
 
 private slots:
 
-    void on_pushButton_released();
-
     void on_action_Open_triggered();
+
+    void on_btnOpenFile_clicked();
+
+    void on_actionAbout_triggered();
+
+    void on_pushButton_clicked();
+
+    void on_btnToolGreyscale_clicked();
 
 private:
     Ui::GoghViewer *ui;
