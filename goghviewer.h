@@ -1,6 +1,7 @@
 #ifndef GOGHVIEWER_H
 #define GOGHVIEWER_H
 
+#include "imageloader.h" 
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -26,6 +27,7 @@ private slots:
 
 private:
     Ui::GoghViewer *ui;
+    ImageLoader il;
     void openImage();
     QPixmap loadImage(QString imagePath);
 };

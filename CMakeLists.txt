@@ -28,6 +28,8 @@ set(PROJECT_SOURCES
         goghviewer.cpp
         goghviewer.h
         goghviewer.ui
+        imageloader.cpp
+        imageloader.h
         ${TS_FILES}
 )
 

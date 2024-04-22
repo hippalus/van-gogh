@@ -1,6 +1,5 @@
 {
     "files.associations": {
-        // This stuff was auto-generated, likely by the C/C++ extension
         "qmainwindow": "cpp",
         "new": "cpp",
         "array": "cpp",
@@ -69,6 +68,9 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "complex": "cpp",
+        "cfenv": "cpp",
+        "qapplication": "cpp"
     }
 }
