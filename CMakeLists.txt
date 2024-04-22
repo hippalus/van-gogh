@@ -10,8 +10,13 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# TODO allow user to set this value easier
-set(CMAKE_PREFIX_PATH "/home/hd/dev/tg/edu/Qt/6.7.0/gcc_64/lib/cmake/")
+FetchContent_Declare (
+    libpng
+    GIT_REPOSITORY https://github.com/pnggroup/libpng.git
+    GIT_TAG v1.6.43
+)
+
+# TODO fix warnings on configure concerning SKIP_AUTOGEN
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools)
@@ -68,6 +73,12 @@ set_target_properties(Van_Gogh PROPERTIES
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
+
+FetchContent_MakeAvailable (
+    libpng
+)
+
+target_link_libraries(Van_Gogh PRIVATE png_shared)
 
 include(GNUInstallDirs)
 install(TARGETS Van_Gogh
