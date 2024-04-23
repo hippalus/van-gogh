@@ -9,6 +9,7 @@ class ImageLoader
 public:
     ImageLoader();
     QImage loadImage(QString imagePath);
+    void storeImage(QImage image, QString imagePath);
 
 private:
     static void cleanupPngData(void *info);

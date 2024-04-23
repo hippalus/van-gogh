@@ -33,6 +33,8 @@ private slots:
 
     void on_btnToolGreyscale_clicked();
 
+    void on_btnSaveAs_clicked();
+
 private:
     Ui::GoghViewer *ui;
     ImageLoader il;

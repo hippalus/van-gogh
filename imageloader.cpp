@@ -13,7 +13,7 @@ QImage ImageLoader::loadImage(QString imagePath)
     png_byte bit_depth;
 
     std::string imgPathStr = imagePath.toStdString();
-    auto imgPathCStr = imgPathStr.c_str();
+    const char *imgPathCStr = imgPathStr.c_str();
     FILE *fp = fopen(imgPathStr.c_str(), "rb");
 
     png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
@@ -87,6 +87,11 @@ QImage ImageLoader::loadImage(QString imagePath)
     png_destroy_read_struct(&png, &info, NULL);
 
     return QImage((uchar *)image_data, width, height, row_size, QImage::Format_RGBA8888, ImageLoader::cleanupPngData, row_pointers);
+}
+
+void ImageLoader::storeImage(QImage image, QString imagePath)
+{
+   image.save(imagePath);
 }
 
 void ImageLoader::cleanupPngData(void *info)

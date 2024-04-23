@@ -81,7 +81,8 @@ void GoghViewer::on_pushButton_clicked()
 
 void GoghViewer::on_btnToolGreyscale_clicked()
 {
-    if(pm.isNull()) {
+    if (pm.isNull())
+    {
         return;
     }
 
@@ -90,4 +91,18 @@ void GoghViewer::on_btnToolGreyscale_clicked()
     // TODO apply greyscale to image
 
     pm = QPixmap::fromImage(image);
+}
+
+void GoghViewer::on_btnSaveAs_clicked()
+{
+    if (pm.isNull())
+    {
+        return;
+    }
+    
+    QString safeFileName = QFileDialog::getSaveFileName(this, QString("Save Image File"), QString("/home/Pictures/"), tr("Images (*.png *.xpm *.jpg)"));
+
+    QImage image = pm.toImage();
+
+    il.storeImage(image, safeFileName);
 }
