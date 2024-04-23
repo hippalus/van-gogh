@@ -3,6 +3,7 @@
 
 #include "imageloader.h"
 #include <QMainWindow>
+#include <QGraphicsScene>
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -35,6 +36,8 @@ private slots:
 private:
     Ui::GoghViewer *ui;
     ImageLoader il;
+    QPixmap pm;
+    std::unique_ptr<QGraphicsScene> scene;
     void openImage();
     QPixmap loadImage(QString imagePath);
 };

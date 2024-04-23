@@ -2,13 +2,13 @@
 #define IMAGELOADER_H
 
 #include <qstring.h>
-#include <qpixmap.h>
+#include <qimage.h>
 
 class ImageLoader
 {
 public:
     ImageLoader();
-    QPixmap loadImage(QString imagePath);
+    QImage loadImage(QString imagePath);
 
 private:
     static void cleanupPngData(void *info);

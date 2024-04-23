@@ -5,7 +5,7 @@ ImageLoader::ImageLoader()
 {
 }
 
-QPixmap ImageLoader::loadImage(QString imagePath)
+QImage ImageLoader::loadImage(QString imagePath)
 {
     // Based on https://gist.github.com/niw/5963798
     int width, height;
@@ -71,9 +71,10 @@ QPixmap ImageLoader::loadImage(QString imagePath)
     // are supposed to be freed manually at some point. In this case, ImageLoader::cleanupPngData will
     // take care of that.
     size_t row_size = png_get_rowbytes(png, info);
-    png_bytep image_data = (png_bytep)malloc(sizeof(png_byte) * height * row_size);
+    png_bytep image_data = new png_byte[height * row_size];
 
-    png_bytep *row_pointers = (png_bytep *)malloc(sizeof(png_bytep) * height);
+    png_bytep *row_pointers = new png_bytep[height];
+
     for (int y = 0; y < height; y++)
     {
         row_pointers[y] = image_data + y * row_size;
@@ -85,14 +86,12 @@ QPixmap ImageLoader::loadImage(QString imagePath)
 
     png_destroy_read_struct(&png, &info, NULL);
 
-    QImage image = QImage((uchar *)image_data, width, height, row_size, QImage::Format_RGBA8888, ImageLoader::cleanupPngData, row_pointers);
-
-    return QPixmap::fromImage(image);
+    return QImage((uchar *)image_data, width, height, row_size, QImage::Format_RGBA8888, ImageLoader::cleanupPngData, row_pointers);
 }
 
 void ImageLoader::cleanupPngData(void *info)
 {
     png_bytep *row_pointers = (png_bytep *)info;
-    free(row_pointers[0]); // Free image_data
-    free(row_pointers);    // Free row_pointers
+    delete[] *row_pointers; // Free image_data
+    delete[] row_pointers;  // Free row_pointers
 }

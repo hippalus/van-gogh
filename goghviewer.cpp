@@ -3,15 +3,17 @@
 #include "imageloader.h"
 
 #include <iostream>
+#include <memory>
 
 #include <QFileDialog>
 #include <QGraphicsPixmapItem>
 #include <QMessageBox>
+#include <QColorTransform>
+#include <QColor>
 
 GoghViewer::GoghViewer(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::GoghViewer)
 {
-    this->il = ImageLoader();
     ui->setupUi(this);
     ui->gridWidget->hide();
 }
@@ -47,14 +49,15 @@ void GoghViewer::openImage(QString selectedFile)
 
     std::cout << "Opening image: " << selectedFile.toStdString() << std::endl;
 
-    QGraphicsScene *scene = new QGraphicsScene;
-    ui->imageViewer->setScene(scene);
+    scene = std::unique_ptr<QGraphicsScene>(new QGraphicsScene);
+    ui->imageViewer->setScene(scene.get());
 
-    QPixmap pixmap = this->il.loadImage(selectedFile);
-    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(pixmap);
+    pm = QPixmap::fromImage(il.loadImage(selectedFile));
+
+    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(pm);
     scene->addItem(item);
 
-    this->adjustSize();
+    adjustSize();
 }
 
 void GoghViewer::on_actionAbout_triggered()
@@ -73,9 +76,18 @@ void GoghViewer::on_actionAbout_triggered()
 void GoghViewer::on_pushButton_clicked()
 {
     ui->gridWidget->setVisible(!ui->gridWidget->isVisible());
+    adjustSize();
 }
 
 void GoghViewer::on_btnToolGreyscale_clicked()
 {
-    std::cout << "We should probably convert the image to greyscale at some point" << std::endl;
+    if(pm.isNull()) {
+        return;
+    }
+
+    QImage image = pm.toImage();
+
+    // TODO apply greyscale to image
+
+    pm = QPixmap::fromImage(image);
 }
