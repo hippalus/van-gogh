@@ -16,6 +16,20 @@ FetchContent_Declare (
     GIT_TAG v1.6.43
 )
 
+FetchContent_Declare(
+    Corrosion
+    GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
+    GIT_TAG v0.4.8
+)
+FetchContent_MakeAvailable(Corrosion)
+
+corrosion_import_crate(MANIFEST_PATH rembrandt/Cargo.toml)
+
+corrosion_add_cxxbridge(librembrandt
+        CRATE rembrandt
+        FILES lib.rs
+)
+
 # TODO fix warnings on configure concerning SKIP_AUTOGEN
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools)
@@ -80,7 +94,7 @@ FetchContent_MakeAvailable (
     libpng
 )
 
-target_link_libraries(Van_Gogh PRIVATE png_shared)
+target_link_libraries(Van_Gogh PRIVATE png_shared librembrandt)
 
 include(GNUInstallDirs)
 install(TARGETS Van_Gogh

@@ -73,3 +73,6 @@ CMakeLists.txt.user*
 *.exe
 
 build/
+
+# Rust stuff
+rembrandt/target
