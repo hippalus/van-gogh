@@ -4,7 +4,6 @@
 #include <QLocale>
 #include <QTranslator>
 #include <iostream>
-#include <librembrandt/lib.h>
 
 int main(int argc, char *argv[])
 {
@@ -27,7 +26,6 @@ int main(int argc, char *argv[])
     {
         w.openImage(QString(argv[1]));
     }
-    std::cout << "added: " << rb_add(1, 2) << std::endl;
 
     w.show();
     return a.exec();

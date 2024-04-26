@@ -91,7 +91,7 @@ QImage ImageLoader::loadImage(QString imagePath)
 
 void ImageLoader::storeImage(QImage image, QString imagePath)
 {
-   image.save(imagePath);
+    image.save(imagePath);
 }
 
 void ImageLoader::cleanupPngData(void *info)

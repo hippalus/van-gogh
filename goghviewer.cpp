@@ -11,6 +11,9 @@
 #include <QColorTransform>
 #include <QColor>
 
+#include <librembrandt/ffi.h>
+#include <rust/cxx.h>
+
 GoghViewer::GoghViewer(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::GoghViewer)
 {
@@ -87,10 +90,26 @@ void GoghViewer::on_btnToolGreyscale_clicked()
     }
 
     QImage image = pm.toImage();
+    const qsizetype imageBytesPerLine = image.bytesPerLine();
+
+    // Could also use constBits, but that doesn't ensure ownership of the bits
+    //  https://doc.qt.io/qt-6/implicit-sharing.html
+    const uchar *imageDataBuf = image.constBits();
+
+    rust::Slice<::std::uint8_t const> imageBuf = rust::Slice(imageDataBuf, image.sizeInBytes());
+    ImageRGBA rb_image = rb_create_image_rgba(imageBuf, image.width(), image.height());
 
     // TODO apply greyscale to image
+    ImageRGBABuf new_image = rb_image_rgba_make_greyscale(rb_image);
+    auto new_image_data = (uchar *)new_image.data.data();
+    auto new_qimage = QImage(new_image_data, new_image.width, new_image.height, imageBytesPerLine, QImage::Format_RGBA8888);
 
-    pm = QPixmap::fromImage(image);
+    pm = QPixmap::fromImage(new_qimage);
+
+    scene = std::unique_ptr<QGraphicsScene>(new QGraphicsScene);
+    ui->imageViewer->setScene(scene.get());
+    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(pm);
+    scene->addItem(item);
 }
 
 void GoghViewer::on_btnSaveAs_clicked()
@@ -99,7 +118,7 @@ void GoghViewer::on_btnSaveAs_clicked()
     {
         return;
     }
-    
+
     QString safeFileName = QFileDialog::getSaveFileName(this, QString("Save Image File"), QString("/home/Pictures/"), tr("Images (*.png *.xpm *.jpg)"));
 
     QImage image = pm.toImage();

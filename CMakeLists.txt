@@ -6,6 +6,7 @@ project(Van_Gogh VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,13 +23,6 @@ FetchContent_Declare(
     GIT_TAG v0.4.8
 )
 FetchContent_MakeAvailable(Corrosion)
-
-corrosion_import_crate(MANIFEST_PATH rembrandt/Cargo.toml)
-
-corrosion_add_cxxbridge(librembrandt
-        CRATE rembrandt
-        FILES lib.rs
-)
 
 # TODO fix warnings on configure concerning SKIP_AUTOGEN
 
@@ -92,6 +86,13 @@ set_target_properties(Van_Gogh PROPERTIES
 
 FetchContent_MakeAvailable (
     libpng
+)
+
+corrosion_import_crate(MANIFEST_PATH rembrandt/Cargo.toml)
+
+corrosion_add_cxxbridge(librembrandt
+        CRATE rembrandt
+        FILES ffi.rs
 )
 
 target_link_libraries(Van_Gogh PRIVATE png_shared librembrandt)
