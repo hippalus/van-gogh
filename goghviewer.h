@@ -4,6 +4,7 @@
 #include "imageloader.h"
 #include <QMainWindow>
 #include <QGraphicsScene>
+#include <QPixmap>
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -35,6 +36,8 @@ private slots:
 
     void on_btnSaveAs_clicked();
 
+    void on_dialHueRotate_valueChanged(int value);
+
 private:
     Ui::GoghViewer *ui;
     ImageLoader il;
@@ -42,5 +45,6 @@ private:
     std::unique_ptr<QGraphicsScene> scene;
     void openImage();
     QPixmap loadImage(QString imagePath);
+    void setShownImage(QPixmap pixmap);
 };
 #endif // GOGHVIEWER_H

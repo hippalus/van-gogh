@@ -11,6 +11,9 @@
 #include <QColorTransform>
 #include <QColor>
 
+#include <librembrandt/proc.h>
+#include <rust/cxx.h>
+
 GoghViewer::GoghViewer(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::GoghViewer)
 {
@@ -49,13 +52,8 @@ void GoghViewer::openImage(QString selectedFile)
 
     std::cout << "Opening image: " << selectedFile.toStdString() << std::endl;
 
-    scene = std::unique_ptr<QGraphicsScene>(new QGraphicsScene);
-    ui->imageViewer->setScene(scene.get());
-
     pm = QPixmap::fromImage(il.loadImage(selectedFile));
-
-    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(pm);
-    scene->addItem(item);
+    this->setShownImage(pm);
 
     adjustSize();
 }
@@ -87,10 +85,42 @@ void GoghViewer::on_btnToolGreyscale_clicked()
     }
 
     QImage image = pm.toImage();
+    auto imageWidth = image.width();
+    auto imageHeight = image.height();
+    auto imageSize = image.sizeInBytes();
 
-    // TODO apply greyscale to image
+    // The buffer of a QImage, like many things in Qt,
+    // is reference counted. constBits returns a raw pointer
+    // into that shared data. Hold on to the image for
+    // as long as imageDataBuf lives for it not to become
+    // dangling...
+    //  https://doc.qt.io/qt-6/implicit-sharing.html
+    const uchar *imageDataBuf = image.constBits();
 
-    pm = QPixmap::fromImage(image);
+    // (PART 2) TODO: call your Rust-defined greyscale implementation, and
+    // pass it to `setShownImage` using
+    // `this->setShownImage(QPixmap::fromImage(new_qimage));`
+}
+
+void GoghViewer::on_dialHueRotate_valueChanged(int value)
+{
+    if (pm.isNull())
+    {
+        return;
+    }
+
+    int degrees = (value * 360) / 100;
+
+    QImage image = pm.toImage();
+    auto imageWidth = image.width();
+    auto imageHeight = image.height();
+    auto imageSize = image.sizeInBytes();
+
+    const uchar *imageDataBuf = image.constBits();
+
+    // (PART 2) TODO: call your Rust-defined hue rotation implementation, and
+    // pass it to `setShownImage` using
+    // `this->setShownImage(QPixmap::fromImage(new_qimage));`
 }
 
 void GoghViewer::on_btnSaveAs_clicked()
@@ -99,10 +129,18 @@ void GoghViewer::on_btnSaveAs_clicked()
     {
         return;
     }
-    
+
     QString safeFileName = QFileDialog::getSaveFileName(this, QString("Save Image File"), QString("/home/Pictures/"), tr("Images (*.png *.xpm *.jpg)"));
 
     QImage image = pm.toImage();
 
     il.storeImage(image, safeFileName);
+}
+
+void GoghViewer::setShownImage(QPixmap pixmap)
+{
+    scene = std::unique_ptr<QGraphicsScene>(new QGraphicsScene);
+    ui->imageViewer->setScene(scene.get());
+    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(pixmap);
+    scene->addItem(item);
 }

@@ -71,6 +71,9 @@
         "fstream": "cpp",
         "complex": "cpp",
         "cfenv": "cpp",
-        "qapplication": "cpp"
-    }
+        "qapplication": "cpp",
+        "qtranslator": "cpp",
+        "cassert": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }
