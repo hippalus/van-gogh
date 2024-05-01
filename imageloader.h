@@ -1,8 +1,8 @@
 #ifndef IMAGELOADER_H
 #define IMAGELOADER_H
 
-#include <qstring.h>
-#include <qimage.h>
+#include <QString>
+#include <QImage>
 
 class ImageLoader
 {

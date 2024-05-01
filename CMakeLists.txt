@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 include(FetchContent)
 
-project(Van_Gogh VERSION 0.1 LANGUAGES CXX)
+project(Van_Gogh VERSION 0.1 LANGUAGES C CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -38,6 +38,8 @@ set(PROJECT_SOURCES
         goghviewer.ui
         imageloader.cpp
         imageloader.h
+        image_info.c
+        image_info.h
         ${TS_FILES}
 )
 
@@ -94,6 +96,10 @@ corrosion_add_cxxbridge(librembrandt
         CRATE rembrandt
         FILES ffi.rs
 )
+
+# TODO can we make this not include stuff in public scope?
+# Which scope makes sense?
+target_include_directories(librembrandt PUBLIC ./rembrandt/src)
 
 target_link_libraries(Van_Gogh PRIVATE png_shared librembrandt)
 

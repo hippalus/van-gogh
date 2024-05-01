@@ -100,9 +100,9 @@ void GoghViewer::on_btnToolGreyscale_clicked()
     ImageRGBA rb_image = rb_create_image_rgba(imageBuf, image.width(), image.height());
 
     // TODO apply greyscale to image
-    ImageRGBABuf new_image = rb_image_rgba_make_greyscale(rb_image);
+    ImageLumaBuf new_image = rb_image_rgba_make_greyscale(rb_image);
     auto new_image_data = (uchar *)new_image.data.data();
-    auto new_qimage = QImage(new_image_data, new_image.width, new_image.height, imageBytesPerLine, QImage::Format_RGBA8888);
+    auto new_qimage = QImage(new_image_data, new_image.width, new_image.height, QImage::Format_Grayscale8);
 
     pm = QPixmap::fromImage(new_qimage);
 
