@@ -51,8 +51,9 @@ void GoghViewer::openImage(QString selectedFile)
     }
 
     std::cout << "Opening image: " << selectedFile.toStdString() << std::endl;
-    
-    this->setShownImage(QPixmap::fromImage(il.loadImage(selectedFile)));
+
+    pm = QPixmap::fromImage(il.loadImage(selectedFile));
+    this->setShownImage(pm);
 
     adjustSize();
 }
@@ -86,10 +87,15 @@ void GoghViewer::on_btnToolGreyscale_clicked()
 
     QImage image = pm.toImage();
 
-    // Could also use constBits, but that doesn't ensure ownership of the bits
+    // The buffer of a QImage, like many things in Qt,
+    // is reference counted. constBits returns a raw pointer
+    // into that shared data. Hold on to the openedImage for
+    // as long as imageDataBuf lives for it not to become
+    // dangling...
     //  https://doc.qt.io/qt-6/implicit-sharing.html
     const uchar *imageDataBuf = image.constBits();
-
+    // ...and therefore, imageBuf and rbImage should not live longer than
+    // openedImage either.
     auto imageBuf = rust::Slice(imageDataBuf, image.sizeInBytes());
     ImageRgbaRef rb_image = create_image_ref(imageBuf, image.width(), image.height());
 
@@ -100,6 +106,30 @@ void GoghViewer::on_btnToolGreyscale_clicked()
     ImageLuma new_image = image_make_greyscale(rb_image);
     auto new_image_data = (uchar *)new_image.data.data();
     auto new_qimage = QImage(new_image_data, new_image.width, new_image.height, QImage::Format_Grayscale8);
+
+    this->setShownImage(QPixmap::fromImage(new_qimage));
+}
+
+void GoghViewer::on_dialHueRotate_valueChanged(int value)
+{
+    using namespace rb;
+    if (pm.isNull())
+    {
+        return;
+    }
+
+    int degrees = (value * 360) / 100;
+
+    QImage image = pm.toImage();
+
+    const uchar *imageDataBuf = image.constBits();
+
+    auto imageBuf = rust::Slice(imageDataBuf, image.sizeInBytes());
+    ImageRgbaRef rb_image = create_image_ref(imageBuf, image.width(), image.height());
+
+    auto new_image = image_rotate_hue(rb_image, degrees);
+    auto new_image_data = (uchar *)new_image.data.data();
+    auto new_qimage = QImage(new_image_data, new_image.width, new_image.height, QImage::Format_RGBA8888);
 
     this->setShownImage(QPixmap::fromImage(new_qimage));
 }
@@ -117,15 +147,11 @@ void GoghViewer::on_btnSaveAs_clicked()
 
     il.storeImage(image, safeFileName);
 }
-void GoghViewer::on_dialHueRotate_valueChanged(int value)
-{
-    std::cout << "HueRotate value changed: " << value << std::endl;
-}
 
-void GoghViewer::setShownImage(QPixmap pixmap) {
-    pm = pixmap;
+void GoghViewer::setShownImage(QPixmap pixmap)
+{
     scene = std::unique_ptr<QGraphicsScene>(new QGraphicsScene);
     ui->imageViewer->setScene(scene.get());
-    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(pm);
+    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(pixmap);
     scene->addItem(item);
 }

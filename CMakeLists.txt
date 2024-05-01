@@ -8,6 +8,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_BUILD_TYPE Debug)
 
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -39,7 +40,7 @@ set(PROJECT_SOURCES
         imageloader.cpp
         imageloader.h
         # (PART 1) Comment out the next line to disable the C implementation of image_info!
-        image_info.c
+        # image_info.c
         image_info.h
         ${TS_FILES}
 )

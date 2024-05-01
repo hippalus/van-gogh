@@ -9,13 +9,13 @@ fn create_image_ref<'b>(buf: &'b [u8], width: u32, height: u32) -> bridge::RbIma
         data_len: buf.len(),
         width,
         height,
-        _marker: &buf[0],
+        _lifetime: &buf[0],
     }
 }
 
 fn image_make_greyscale<'b>(img: &RbImageRgbaRef<'b>) -> RbImageLuma {
     let image: GrayImage = ImageRgbaRef::from(img).convert();
-    
+
     let data = image.into_raw();
     RbImageLuma {
         data,
@@ -26,8 +26,13 @@ fn image_make_greyscale<'b>(img: &RbImageRgbaRef<'b>) -> RbImageLuma {
 
 fn image_rotate_hue<'bi>(img: &RbImageRgbaRef<'bi>, degrees: i32) -> RbImageRgba {
     let image = ImageRgbaRef::from(img);
-    huerotate(&image, degrees);
-    todo!()
+    let image = huerotate(&image, degrees);
+    let data = image.into_raw();
+    RbImageRgba {
+        data,
+        width: img.width,
+        height: img.height,
+    }
 }
 
 impl<'b> From<&RbImageRgbaRef<'b>> for ImageRgbaRef<'b> {
@@ -54,7 +59,7 @@ mod bridge {
     pub struct RbImageRgbaRef<'b> {
         // Sadly, cxx doesn't support
         // slices as fields of shared structs,
-        // so we create one ourselves using a 
+        // so we create one ourselves using a
         // raw pointer and its length...
         data: *const u8,
         data_len: usize,
@@ -66,10 +71,10 @@ mod bridge {
         // so the ~hack~workaround is to add a reference
         // to the first byte in the slice, which *does*
         // convey a lifetime. Trading struct size for
-        // more info on our type, so we can be more 
+        // more info on our type, so we can be more
         // confident when converting this back to an
         // actual Rust slice.
-        _marker: &'b u8,
+        _lifetime: &'b u8,
     }
 
     #[cxx_name = "ImageRgba"]
@@ -87,7 +92,11 @@ mod bridge {
     }
 
     extern "Rust" {
-        unsafe fn create_image_ref<'b>(buf: &'b [u8], width: u32, height: u32) -> RbImageRgbaRef<'b>;
+        unsafe fn create_image_ref<'b>(
+            buf: &'b [u8],
+            width: u32,
+            height: u32,
+        ) -> RbImageRgbaRef<'b>;
 
         unsafe fn image_make_greyscale<'b>(img: &RbImageRgbaRef<'b>) -> RbImageLuma;
 
