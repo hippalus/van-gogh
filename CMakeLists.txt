@@ -12,12 +12,6 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-FetchContent_Declare (
-    libpng
-    GIT_REPOSITORY https://github.com/pnggroup/libpng.git
-    GIT_TAG v1.6.43
-)
-
 FetchContent_Declare(
     Corrosion
     GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
@@ -26,6 +20,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Corrosion)
 
 # TODO fix warnings on configure concerning SKIP_AUTOGEN
+
+find_package(PNG REQUIRED)
+include_directories(${PNG_INCLUDE_DIR})
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools)
@@ -88,10 +85,6 @@ set_target_properties(Van_Gogh PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-FetchContent_MakeAvailable (
-    libpng
-)
-
 corrosion_import_crate(MANIFEST_PATH rembrandt/Cargo.toml)
 
 corrosion_add_cxxbridge(librembrandt
@@ -103,7 +96,7 @@ corrosion_add_cxxbridge(librembrandt
 # Which scope makes sense?
 target_include_directories(librembrandt PUBLIC ./rembrandt/src)
 
-target_link_libraries(Van_Gogh PRIVATE png_shared librembrandt)
+target_link_libraries(Van_Gogh PRIVATE ${PNG_LIBRARY} librembrandt)
 
 include(GNUInstallDirs)
 install(TARGETS Van_Gogh
