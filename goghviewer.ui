@@ -55,23 +55,10 @@
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="tool_layout">
-         <item row="2" column="0" alignment="Qt::AlignBottom">
-          <widget class="QDial" name="dialHueRotate">
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>511</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>100</height>
-            </size>
-           </property>
-          </widget>
+         <item row="2" column="0">
+          <widget class="QDial" name="dialHueRotate"/>
          </item>
-         <item row="3" column="0">
+         <item row="3" column="0" alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="labelHueRotate">
            <property name="text">
             <string>Rotate Hue</string>

@@ -11,7 +11,7 @@
 #include <QColorTransform>
 #include <QColor>
 
-#include <librembrandt/ffi.h>
+#include <librembrandt/proc.h>
 #include <rust/cxx.h>
 
 GoghViewer::GoghViewer(QWidget *parent)
@@ -51,14 +51,8 @@ void GoghViewer::openImage(QString selectedFile)
     }
 
     std::cout << "Opening image: " << selectedFile.toStdString() << std::endl;
-
-    scene = std::unique_ptr<QGraphicsScene>(new QGraphicsScene);
-    ui->imageViewer->setScene(scene.get());
-
-    pm = QPixmap::fromImage(il.loadImage(selectedFile));
-
-    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(pm);
-    scene->addItem(item);
+    
+    this->setShownImage(QPixmap::fromImage(il.loadImage(selectedFile)));
 
     adjustSize();
 }
@@ -84,32 +78,30 @@ void GoghViewer::on_pushButton_clicked()
 
 void GoghViewer::on_btnToolGreyscale_clicked()
 {
+    using namespace rb;
     if (pm.isNull())
     {
         return;
     }
 
     QImage image = pm.toImage();
-    const qsizetype imageBytesPerLine = image.bytesPerLine();
 
     // Could also use constBits, but that doesn't ensure ownership of the bits
     //  https://doc.qt.io/qt-6/implicit-sharing.html
     const uchar *imageDataBuf = image.constBits();
 
-    rust::Slice<::std::uint8_t const> imageBuf = rust::Slice(imageDataBuf, image.sizeInBytes());
-    ImageRGBA rb_image = rb_create_image_rgba(imageBuf, image.width(), image.height());
+    auto imageBuf = rust::Slice(imageDataBuf, image.sizeInBytes());
+    ImageRgbaRef rb_image = create_image_ref(imageBuf, image.width(), image.height());
 
-    // TODO apply greyscale to image
-    ImageLumaBuf new_image = rb_image_rgba_make_greyscale(rb_image);
+    // Make sure new_image does not get dropped before new_qimage does,
+    // as that would introduce a dangling pointer. An alternative is to
+    // provide mechanics for the QImage's cleanupFunction to control when new_image
+    // gets dropped.
+    ImageLuma new_image = image_make_greyscale(rb_image);
     auto new_image_data = (uchar *)new_image.data.data();
     auto new_qimage = QImage(new_image_data, new_image.width, new_image.height, QImage::Format_Grayscale8);
 
-    pm = QPixmap::fromImage(new_qimage);
-
-    scene = std::unique_ptr<QGraphicsScene>(new QGraphicsScene);
-    ui->imageViewer->setScene(scene.get());
-    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(pm);
-    scene->addItem(item);
+    this->setShownImage(QPixmap::fromImage(new_qimage));
 }
 
 void GoghViewer::on_btnSaveAs_clicked()
@@ -130,3 +122,10 @@ void GoghViewer::on_dialHueRotate_valueChanged(int value)
     std::cout << "HueRotate value changed: " << value << std::endl;
 }
 
+void GoghViewer::setShownImage(QPixmap pixmap) {
+    pm = pixmap;
+    scene = std::unique_ptr<QGraphicsScene>(new QGraphicsScene);
+    ui->imageViewer->setScene(scene.get());
+    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(pm);
+    scene->addItem(item);
+}

@@ -1,8 +1,10 @@
-use self::bridge::{ImageLumaBuf, ImageRGBA, ImageRgbaBuf};
-use image::{GrayImage, ImageBuffer, Rgba};
+use self::bridge::*;
+use image::{buffer::ConvertBuffer, imageops::huerotate, GrayImage, ImageBuffer, Rgba};
 
-fn create_image<'b>(buf: &'b [u8], width: u32, height: u32) -> bridge::ImageRGBA<'b> {
-    ImageRGBA {
+type ImageRgbaRef<'b> = ImageBuffer<Rgba<u8>, &'b [u8]>;
+
+fn create_image_ref<'b>(buf: &'b [u8], width: u32, height: u32) -> bridge::RbImageRgbaRef<'b> {
+    RbImageRgbaRef {
         data: buf.as_ptr(),
         data_len: buf.len(),
         width,
@@ -11,57 +13,84 @@ fn create_image<'b>(buf: &'b [u8], width: u32, height: u32) -> bridge::ImageRGBA
     }
 }
 
-fn image_make_greyscale<'bi>(img: &ImageRGBA<'bi>) -> ImageLumaBuf {
-    use image::buffer::ConvertBuffer;
-    let buffer = unsafe { std::slice::from_raw_parts(img.data, img.data_len) };
-    let image: ImageBuffer<Rgba<u8>, _> =
-        ImageBuffer::from_raw(img.width, img.height, buffer).unwrap();
-
-    let image: GrayImage = image.convert();
-
+fn image_make_greyscale<'b>(img: &RbImageRgbaRef<'b>) -> RbImageLuma {
+    let image: GrayImage = ImageRgbaRef::from(img).convert();
+    
     let data = image.into_raw();
-    ImageLumaBuf {
+    RbImageLuma {
         data,
         width: img.width,
         height: img.height,
     }
 }
 
-fn image_rotate_hue<'bi, 'bo>(img: &ImageRGBA<'bi>) -> ImageRgbaBuf {
+fn image_rotate_hue<'bi>(img: &RbImageRgbaRef<'bi>, degrees: i32) -> RbImageRgba {
+    let image = ImageRgbaRef::from(img);
+    huerotate(&image, degrees);
     todo!()
 }
 
-#[cxx::bridge]
+impl<'b> From<&RbImageRgbaRef<'b>> for ImageRgbaRef<'b> {
+    fn from(img: &RbImageRgbaRef<'b>) -> Self {
+        let buffer = if img.data_len == 0 {
+            &[]
+        } else {
+            assert!(!img.data.is_null());
+            // Note(unsafe): an RbImageRgbaRef can only be created using
+            // [create_image_ref], which converts a slice into raw parts,
+            // and keeps lifetime information intact. We're also doing a
+            // null check as well as a check of the data length
+            // to be even more sure we're not introducing UB.
+            unsafe { std::slice::from_raw_parts(img.data, img.data_len) }
+        };
+
+        ImageBuffer::from_raw(img.width, img.height, buffer).unwrap()
+    }
+}
+#[cxx::bridge(namespace = "rb")]
 mod bridge {
 
-    pub struct ImageRGBA<'b> {
+    #[cxx_name = "ImageRgbaRef"]
+    pub struct RbImageRgbaRef<'b> {
+        // Sadly, cxx doesn't support
+        // slices as fields of shared structs,
+        // so we create one ourselves using a 
+        // raw pointer and its length...
         data: *const u8,
         data_len: usize,
         width: u32,
         height: u32,
+        // ... but a slice is incomplete if
+        // no lifetime is associated with it.
+        // Cxx doesn't currently support std::marker::PhantomData either,
+        // so the ~hack~workaround is to add a reference
+        // to the first byte in the slice, which *does*
+        // convey a lifetime. Trading struct size for
+        // more info on our type, so we can be more 
+        // confident when converting this back to an
+        // actual Rust slice.
         _marker: &'b u8,
     }
 
-    pub struct ImageRgbaBuf {
+    #[cxx_name = "ImageRgba"]
+    pub struct RbImageRgba {
         data: Vec<u8>,
         width: u32,
         height: u32,
     }
 
-    pub struct ImageLumaBuf {
+    #[cxx_name = "ImageLuma"]
+    pub struct RbImageLuma {
         data: Vec<u8>,
         width: u32,
         height: u32,
     }
 
     extern "Rust" {
-        #[cxx_name = "rb_create_image"]
-        unsafe fn create_image<'b>(buf: &'b [u8], width: u32, height: u32) -> ImageRGBA<'b>;
+        unsafe fn create_image_ref<'b>(buf: &'b [u8], width: u32, height: u32) -> RbImageRgbaRef<'b>;
 
-        #[cxx_name = "rb_image_make_greyscale"]
-        unsafe fn image_make_greyscale<'bi, 'bo>(img: &ImageRGBA<'bi>) -> ImageLumaBuf;
+        unsafe fn image_make_greyscale<'b>(img: &RbImageRgbaRef<'b>) -> RbImageLuma;
 
-        #[cxx_name = "rb_image_rotate_hue"]
-        unsafe fn image_rotate_hue<'bi, 'bo>(img: &ImageRGBA<'bi>) -> ImageRgbaBuf;
+        unsafe fn image_rotate_hue<'b>(img: &RbImageRgbaRef<'b>, degrees: i32) -> RbImageRgba;
     }
 }
