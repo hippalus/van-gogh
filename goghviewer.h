@@ -35,6 +35,8 @@ private slots:
 
     void on_btnSaveAs_clicked();
 
+    void on_dialHueRotate_valueChanged(int value);
+
 private:
     Ui::GoghViewer *ui;
     ImageLoader il;

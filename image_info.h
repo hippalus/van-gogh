@@ -8,11 +8,11 @@ extern "C" {
 typedef struct ImageInfo {
     unsigned width;
     unsigned height;
-    unsigned channels;
-    unsigned bitdepth;
+    unsigned color_type;
+    unsigned bit_depth;
 }  ImageInfo;
 
-ImageInfo image_info(const char* path);
+int image_info(const char* path, ImageInfo* info);
 unsigned image_buf_size(ImageInfo info);
 unsigned image_row_size(ImageInfo info);
 

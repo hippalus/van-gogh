@@ -26,8 +26,11 @@ QImage ImageLoader::loadImage(QString imagePath)
 
     png_read_info(png, info);
     png_read_update_info(png, info);
+    ImageInfo img_info;
 
-    auto img_info = image_info(imgPathStr.c_str());
+    if(image_info(imgPathStr.c_str(), &img_info) != 0) {
+        abort();
+    }
 
     // libpng wants a series of pointers for it to store the row data into.
     // It'll write the data of each row into the buffers those pointers point to.

@@ -1,8 +1,5 @@
-use crate::ffi::bridge::ImageRGBABuf;
-
-use self::bridge::ImageRGBA;
-use cxx as _;
-use image::{GrayAlphaImage, ImageBuffer, Rgba, RgbaImage};
+use self::bridge::{ImageLumaBuf, ImageRGBA, ImageRgbaBuf};
+use image::{GrayImage, ImageBuffer, Rgba};
 
 fn create_image<'b>(buf: &'b [u8], width: u32, height: u32) -> bridge::ImageRGBA<'b> {
     ImageRGBA {
@@ -14,21 +11,24 @@ fn create_image<'b>(buf: &'b [u8], width: u32, height: u32) -> bridge::ImageRGBA
     }
 }
 
-fn image_make_greyscale<'bi>(img: &ImageRGBA<'bi>) -> ImageRGBABuf {
+fn image_make_greyscale<'bi>(img: &ImageRGBA<'bi>) -> ImageLumaBuf {
     use image::buffer::ConvertBuffer;
     let buffer = unsafe { std::slice::from_raw_parts(img.data, img.data_len) };
     let image: ImageBuffer<Rgba<u8>, _> =
         ImageBuffer::from_raw(img.width, img.height, buffer).unwrap();
 
-    let image: GrayAlphaImage = image.convert();
-    let image: RgbaImage = image.convert();
+    let image: GrayImage = image.convert();
 
     let data = image.into_raw();
-    ImageRGBABuf {
+    ImageLumaBuf {
         data,
         width: img.width,
         height: img.height,
     }
+}
+
+fn image_rotate_hue<'bi, 'bo>(img: &ImageRGBA<'bi>) -> ImageRgbaBuf {
+    todo!()
 }
 
 #[cxx::bridge]
@@ -42,18 +42,26 @@ mod bridge {
         _marker: &'b u8,
     }
 
-    pub struct ImageRGBABuf {
+    pub struct ImageRgbaBuf {
+        data: Vec<u8>,
+        width: u32,
+        height: u32,
+    }
+
+    pub struct ImageLumaBuf {
         data: Vec<u8>,
         width: u32,
         height: u32,
     }
 
     extern "Rust" {
-        #[cxx_name = "rb_create_image_rgba"]
+        #[cxx_name = "rb_create_image"]
         unsafe fn create_image<'b>(buf: &'b [u8], width: u32, height: u32) -> ImageRGBA<'b>;
 
-        #[cxx_name = "rb_image_rgba_make_greyscale"]
-        unsafe fn image_make_greyscale<'bi, 'bo>(img: &ImageRGBA<'bi>) -> ImageRGBABuf;
-    }
+        #[cxx_name = "rb_image_make_greyscale"]
+        unsafe fn image_make_greyscale<'bi, 'bo>(img: &ImageRGBA<'bi>) -> ImageLumaBuf;
 
+        #[cxx_name = "rb_image_rotate_hue"]
+        unsafe fn image_rotate_hue<'bi, 'bo>(img: &ImageRGBA<'bi>) -> ImageRgbaBuf;
+    }
 }

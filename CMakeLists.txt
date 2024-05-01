@@ -38,6 +38,7 @@ set(PROJECT_SOURCES
         goghviewer.ui
         imageloader.cpp
         imageloader.h
+        # (PART 1) Comment out the next line to disable the C implementation of image_info!
         image_info.c
         image_info.h
         ${TS_FILES}
@@ -94,7 +95,7 @@ corrosion_import_crate(MANIFEST_PATH rembrandt/Cargo.toml)
 
 corrosion_add_cxxbridge(librembrandt
         CRATE rembrandt
-        FILES ffi.rs
+        FILES proc.rs
 )
 
 # TODO can we make this not include stuff in public scope?

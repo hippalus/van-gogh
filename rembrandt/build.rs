@@ -1,9 +1,8 @@
 fn main() {
-    cxx_build::bridge("src/ffi.rs") // returns a cc::Build
+    cxx_build::bridge("src/proc.rs") // returns a cc::Build
         .std("c++11")
-        .file("src/imagergba.cc")
-        .file("src/imagergba.h")
+        .include("src")
+        
         .compile("rembrandt");
-
     println!("cargo:rerun-if-changed=src/lib.rs");
 }

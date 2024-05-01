@@ -125,3 +125,8 @@ void GoghViewer::on_btnSaveAs_clicked()
 
     il.storeImage(image, safeFileName);
 }
+void GoghViewer::on_dialHueRotate_valueChanged(int value)
+{
+    std::cout << "HueRotate value changed: " << value << std::endl;
+}
+
