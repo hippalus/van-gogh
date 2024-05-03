@@ -8,6 +8,7 @@ ImageLoader::ImageLoader()
 
 QImage ImageLoader::loadImage(QString imagePath)
 {
+    // Based on https://gist.github.com/niw/5963798
     std::string imgPathStr = imagePath.toStdString();
     FILE *fp = fopen(imgPathStr.c_str(), "rb");
 
