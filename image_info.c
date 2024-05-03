@@ -42,5 +42,5 @@ unsigned image_buf_size(ImageInfo info) {
 }
 
 unsigned image_row_size(ImageInfo info) {
-    return info.width * info.color_type;
+    return info.width * 4;
 }

@@ -8,6 +8,11 @@ use std::{
 
 use image::{DynamicImage, ImageError};
 
+mod ffi {
+    // (PART 1): TODO expose extern "C" interface that corresponds to
+    // the interface defined in image_info.h. You can use the `image` crate to
+    // load the image data.
+}
 
 #[allow(dead_code)]
 pub enum ImageInfoError {
@@ -56,11 +61,4 @@ impl From<BitDepth> for c_uint {
     fn from(value: BitDepth) -> Self {
         (value as u8).into()
     }
-}
-
-// #[cfg(never)]
-mod ffi {
-    // (PART 1): TODO expose extern "C" interface that corresponds to
-    // the interface defined in image_info.h. You can use the `image` crate to
-    // load the image data.
 }
