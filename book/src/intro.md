@@ -31,3 +31,4 @@ After this workshop, you'll be able to:
 - Explain why FFI is hard in general and what needs to be taken into account when defining a foreign interface
 - Work with the basic functionality Rust provides to define and expose a C-interface to your Rust libraries
 - Use CXX to define and expose a C++-interface to your Rust libraries
+- Get an intuition of how to introduce Rust in a foreign-language-based project and the amount of effort that would take
