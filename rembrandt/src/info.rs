@@ -6,65 +6,6 @@ use std::{
 
 use image::{DynamicImage, ImageError};
 
-
-#[allow(dead_code)]
-pub enum ImageInfoError {
-    Utf8(Utf8Error),
-    Image(ImageError),
-    UnsupportedPixelType,
-}
-
-impl From<Utf8Error> for ImageInfoError {
-    fn from(e: Utf8Error) -> Self {
-        Self::Utf8(e)
-    }
-}
-
-impl From<ImageError> for ImageInfoError {
-    fn from(e: ImageError) -> Self {
-        Self::Image(e)
-    }
-}
-
-#[repr(C)]
-#[derive(Clone, Copy)]
-pub struct ImageInfo {
-    width: c_uint,
-    height: c_uint,
-    color_type: c_uint,
-    bit_depth: c_uint,
-}
-
-#[repr(u8)]
-pub enum ColorType {
-    Grayscale = 0,
-    Rgb = 2,
-    Palette = 3,
-    GrayscaleAlpha = 4,
-    RgbAlpha = 6,
-}
-
-impl From<ColorType> for c_uint {
-    fn from(value: ColorType) -> Self {
-        (value as u8).into()
-    }
-}
-
-#[repr(u8)]
-pub enum BitDepth {
-    Depth1 = 1,
-    Depth2 = 2,
-    Depth4 = 4,
-    Depth8 = 8,
-    Depth16 = 16,
-}
-
-impl From<BitDepth> for c_uint {
-    fn from(value: BitDepth) -> Self {
-        (value as u8).into()
-    }
-}
-
 impl ImageInfo {
     pub fn read_from_path(path: &CStr) -> Result<Self, ImageInfoError> {
         let path = Path::new(path.to_str()?);
@@ -138,5 +79,63 @@ mod ffi {
     #[no_mangle]
     pub extern "C" fn image_row_size(info: ImageInfo) -> c_uint {
         info.width * info.color_type
+    }
+}
+
+#[allow(dead_code)]
+pub enum ImageInfoError {
+    Utf8(Utf8Error),
+    Image(ImageError),
+    UnsupportedPixelType,
+}
+
+impl From<Utf8Error> for ImageInfoError {
+    fn from(e: Utf8Error) -> Self {
+        Self::Utf8(e)
+    }
+}
+
+impl From<ImageError> for ImageInfoError {
+    fn from(e: ImageError) -> Self {
+        Self::Image(e)
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+pub struct ImageInfo {
+    width: c_uint,
+    height: c_uint,
+    color_type: c_uint,
+    bit_depth: c_uint,
+}
+
+#[repr(u8)]
+pub enum ColorType {
+    Grayscale = 0,
+    Rgb = 2,
+    Palette = 3,
+    GrayscaleAlpha = 4,
+    RgbAlpha = 6,
+}
+
+impl From<ColorType> for c_uint {
+    fn from(value: ColorType) -> Self {
+        (value as u8).into()
+    }
+}
+
+#[repr(u8)]
+pub enum BitDepth {
+    Depth1 = 1,
+    Depth2 = 2,
+    Depth4 = 4,
+    Depth8 = 8,
+    Depth16 = 16,
+}
+
+impl From<BitDepth> for c_uint {
+    fn from(value: BitDepth) -> Self {
+        (value as u8).into()
     }
 }
