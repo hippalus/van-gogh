@@ -1,6 +1,5 @@
 # C ABI
-
-To have Rust represent data and call functions as prescribed in the C ABI, we have a number of tools. First off, we have `extern "C" fn` to define Rust functions that can be called using the C calling convention, and can therefore be used from C:
+To have Rust represent data and call and expose functions as prescribed in the C ABI, we have a number of tools.
 
 ```rust
 #[no_mangle]
@@ -62,10 +61,7 @@ target/debug
 
 I'm on Linux, so I get a `.so` file for a dynamic library, but if you're running Windows you'll get a `.dll` file, and on MacOS, a `.dylib` file is created. The static library is a `.a` file on Linux, MacOS and as well as on Windows when on MinGW, or a `.lib` file when using MSVC.
 
-
-- up until "However, as mentioned,"
-
-# 🛠️ Exercise: Calling Rust from C
+# Exercise: Calling Rust from C
 
 Now lets get a feeling for C ABIs in a "real world" code base. In the top level directory of the 
 [repository](https://github.com/hdoordt/van-gogh) you find a C++ application called *van-gogh*. For now, we want to
@@ -79,7 +75,7 @@ You can find a prepared Rust crate in the rembrandt folder.
 1. Open rembrandt/src/info.rs and image_info.h
 2. Recreate the API described in the header in Rust
 3. Try to build it (this should give you an error about some double symbols)
-4. Rename or remove the functions in image_info.c
+4. Rename or remove the functions in image_info.c or remove the mention of the file in CMakeLists.txt
 5. Try building again, this should work now
 6. Now reimplement the old logic in Rust using the [image](https://docs.rs/image/latest/image/) crate
 
