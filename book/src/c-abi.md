@@ -65,8 +65,25 @@ I'm on Linux, so I get a `.so` file for a dynamic library, but if you're running
 
 - up until "However, as mentioned,"
 
-# Exercise: Calling Rust from C
+# 🛠️ Exercise: Calling Rust from C
 
+Now lets get a feeling for C ABIs in a "real world" code base. In the top level directory of the 
+[repository](https://github.com/hdoordt/van-gogh) you find a C++ application called *van-gogh*. For now, we want to
+replace the oldest part of this software with Rust. In image_info.c and image_info.h you will find some code that can
+gather some information about a PNG image.
+
+Your task is to reimplement the functionality of image_info.c in Rust.
+
+You can find a prepared Rust crate in the rembrandt folder. 
+
+1. Open rembrandt/src/info.rs and image_info.h
+2. Recreate the API described in the header in Rust
+3. Try to build it (this should give you an error about some double symbols)
+4. Rename or remove the functions in image_info.c
+5. Try building again, this should work now
+6. Now reimplement the old logic in Rust using the [image](https://docs.rs/image/latest/image/) crate
+
+<!--
 - Exercises read image info
     - Use image crate to load a QImage using the C ABI
     - Instruct to use utf8 conversion for Cstr to Path
@@ -76,3 +93,4 @@ I'm on Linux, so I get a `.so` file for a dynamic library, but if you're running
     - Did you check encoding
     - ...
     - 
+-->
