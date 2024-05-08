@@ -76,3 +76,7 @@ build/
 
 # Rust stuff
 rembrandt/target
+
+.idea/
+
+cmake-build-debug/

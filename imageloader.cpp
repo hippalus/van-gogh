@@ -12,7 +12,7 @@ QImage ImageLoader::loadImage(QString imagePath)
     std::string imgPathStr = imagePath.toStdString();
     FILE *fp = fopen(imgPathStr.c_str(), "rb");
 
-    png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_structp png = png_create_read_struct("1.6.43", NULL, NULL, NULL);
     if (!png)
         abort();
 

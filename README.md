@@ -20,6 +20,12 @@ On **Ubuntu** or **Debian**, run:
 sudo apt install clang cmake
 ```
 
+On **macOS** run:
+
+```shell
+brew install llvm cmake
+```
+
 With that out of the way, we need to install some dependencies namely Qt and libpng, which this project relies upon.
 
 On **Fedora**:
@@ -32,6 +38,12 @@ On **Ubuntu** or **Debian**:
 
 ```shell
 sudo apt install libpng-dev qt6-tools-dev qt6-tools-dev-tools qt6-l10n-tools libgl1-mesa-dev qt6-wayland qt6-wayland-dev qt6-wayland-dev-tools
+```
+
+On **macOS**:
+
+```shell
+brew install qt@6 libpng mesa
 ```
 
 All right, now go ahead and open the project folder at the location you checked it out to in VS Code. After a few seconds, VS Code will ask you to install recommended extensions. Click 'yes'. This will install the extensions specified in `.vscode/extensions.json`. This installation may take a while.

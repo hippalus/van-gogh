@@ -11,7 +11,7 @@ int image_info(const char* path, ImageInfo* img_info) {
 
     FILE *fp = fopen(path, "rb");
 
-    png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_structp png = png_create_read_struct("1.6.43", NULL, NULL, NULL);
     if (!png)
         return -1;
 
