@@ -47,7 +47,7 @@ mod ffi {
     use super::*;
 
     #[no_mangle]
-    pub extern "C" fn image_info(path: *const c_char, info: *mut ImageInfo) -> c_int {
+    pub unsafe extern "C" fn image_info(path: *const c_char, info: *mut ImageInfo) -> c_int {
         if path.is_null() || info.is_null() {
             return -1;
         }
