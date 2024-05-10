@@ -1,10 +1,10 @@
 use std::{
-    ffi::{c_char, c_uint, c_int, CStr},
+    ffi::{c_char, c_int, c_uint, CStr},
     path::Path,
     str::Utf8Error,
 };
 
-use image::{DynamicImage, GenericImageView, ImageError};
+use image::{DynamicImage, ImageError};
 
 #[repr(C)]
 pub struct ImageInfo {
